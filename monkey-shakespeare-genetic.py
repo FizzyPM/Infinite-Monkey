@@ -1,6 +1,25 @@
-import math
+import pygame
+import sys
 import random
+import math
 from numpy import interp
+
+pygame.init()
+
+width = 1320
+height = 710
+display = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Genetic Algorithm")
+clock = pygame.time.Clock()
+
+small_font = pygame.font.SysFont("Courier", 18)
+medium_font = pygame.font.SysFont("Courier", 25)
+large_font = pygame.font.SysFont("Courier", 50)
+
+background = (255, 255, 255)
+body = (0, 0, 0)
+
+# ------------------------------------------------------------------------------
 
 
 def newChar():
@@ -129,24 +148,67 @@ class Population:
 		return total / len(self.population)
 
 	def allPhrases(self):
-		everything = ""
-		# displayLimit = min(len(self.population), 50)
-		displayLimit = len(self.population)
+		everything = []
+		displayLimit = min(len(self.population), 32)
+		# displayLimit = len(self.population)
 		for i in range(displayLimit):
-			everything += self.population[i].getPhrase() + "\n"
+			everything.append(self.population[i].getPhrase())
 		return everything
+
+# ------------------------------------------------------------------------------
+
+
+def displayInfo():
+	best_phrase = large_font.render("Best phrase:", True, body)
+	answer = large_font.render(population.getBest(), True, body)
+	generation = medium_font.render("total generations: " + str(population.getGenerations()), True, body)
+	avgfitness = medium_font.render("average fitness: " + str(population.getAverageFitness()), True, body)
+	totalpop = medium_font.render("total population: " + str(popmax), True, body)
+	mutation = medium_font.render("mutation rate: " + str(math.floor(mutationRate * 100)) + "%", True, body)
+	all_phrases = medium_font.render("All phrases:", True, body)
+	phrases = population.allPhrases()
+	label = []
+	for line in phrases:
+		label.append(small_font.render(line, True, body))
+
+	display.blit(best_phrase, (30, 200))
+	display.blit(answer, (30, 250))
+	display.blit(generation, (30, 320))
+	display.blit(avgfitness, (30, 350))
+	display.blit(totalpop, (30, 380))
+	display.blit(mutation, (30, 410))
+	display.blit(all_phrases, (850, 15))
+	for line in range(len(label)):
+		display.blit(label[line], (850, 50 + (20 * line)))
+
+	pygame.display.update()
+
+
+def pause():
+	while True:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
 
 
 target = "To be or not to be."
 popmax = 200
 mutationRate = 0.01
 population = Population(target, mutationRate, popmax)
-while(True):
+while True:
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			pygame.quit()
+			sys.exit()
+
+	display.fill(background)
 	population.naturalSelection()
 	population.generate()
 	population.calcFitness()
 	population.evaluate()
-	print(population.getBest())
+	displayInfo()
 	if population.isFinished() is True:
-		print("end")
-		break
+		pause()
+	pygame.display.update()
+
