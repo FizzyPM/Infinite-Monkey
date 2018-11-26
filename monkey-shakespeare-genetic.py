@@ -4,22 +4,26 @@ from numpy import interp
 
 
 def newChar():
+	# print("newChar")
 	c = math.floor(random.randint(63, 122))
 	if c == 63:
 		c = 32
 	if c == 64:
 		c = 46
-	print(chr(c))
+	# print(chr(c))
 	return chr(c)
 
 
 class DNA:
-	def __init__(self, num):
+	def __init__(self, numb):
+		# print("DNA Constructor")
 		self.genes = []
 		self.fitnss = 0
-		for i in range(num):
-			self.genes[0] = newChar()
-			print(self.genes[0])
+		# print(num)
+		for i in range(numb):
+			# print(i)
+			self.genes.append(newChar())
+			# print(self.genes[i])
 
 	def getPhrase(self):
 		return "".join(self.genes)
@@ -50,6 +54,7 @@ class DNA:
 
 class Population:
 	def __init__(self, p, m, num):
+		# print("Pop Constuctor")
 		self.target = p
 		self.mutationRate = m
 		self.perfectScore = 1
@@ -58,8 +63,10 @@ class Population:
 		self.best = ""
 
 		self.population = []
+		# print(num)
 		for i in range(num):
-			self.population[i] = DNA(len(self.target))
+			# print(i)
+			self.population.append(DNA(len(self.target)))
 		self.matingPool = []
 		self.calcFitness()
 
@@ -79,11 +86,15 @@ class Population:
 			n = math.floor(fitness * 100)
 			for j in range(n):
 				self.matingPool.append(self.population[i])
+				# print(self.matingPool[j])
 
 	def generate(self):
 		for i in range(len(self.population)):
-			a = math.floor(random.randint(0, len(self.matingPool)))
-			b = math.floor(random.randint(0, len(self.matingPool)))
+			a = math.floor(random.randint(0, len(self.matingPool) - 1))
+			b = math.floor(random.randint(0, len(self.matingPool) - 1))
+			# print("a is {}".format(a))
+			# print("b is {}".format(b))
+			# print(len(self.matingPool))
 			partnerA = self.matingPool[a]
 			partnerB = self.matingPool[b]
 			child = partnerA.crossover(partnerB)
@@ -119,9 +130,10 @@ class Population:
 
 	def allPhrases(self):
 		everything = ""
-		displayLimit = min(self.population.length, 50)
+		# displayLimit = min(len(self.population), 50)
+		displayLimit = len(self.population)
 		for i in range(displayLimit):
-			everything += self.population[i].getPhrase() + "<br>"
+			everything += self.population[i].getPhrase() + "\n"
 		return everything
 
 
@@ -134,6 +146,7 @@ while(True):
 	population.generate()
 	population.calcFitness()
 	population.evaluate()
+	print(population.getBest())
 	if population.isFinished() is True:
+		print("end")
 		break
-	print(population.allPhrases())
