@@ -211,4 +211,3 @@ while True:
 	if population.isFinished() is True:
 		pause()
 	pygame.display.update()
-
